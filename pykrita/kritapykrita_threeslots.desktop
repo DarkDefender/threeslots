@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Service
+ServiceTypes=Krita/PythonPlugin
+X-KDE-Library=threeslots
+X-Python-2-Compatible=true
+X-Krita-Manual=Manual.html
+Name=Three slots
+Name[en_GB]=Three slots
+Comment=Assign a slot to ctrl-1 to ctrl-0
+Comment[en_GB]=Assign a slot to ctrl-1 to ctrl-0
