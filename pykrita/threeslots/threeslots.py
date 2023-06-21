@@ -25,6 +25,7 @@ class ThreeSlotsExtension(krita.Extension):
         self.actions = []
         self.brushResourceList = [None] * self.num_slots
         self.brushSizeList = [None] * self.num_slots
+        self.paintingOpacityList = [None] * self.num_slots
         #Monitor the erase toggle
         self.kritaEraserAction = None
 
@@ -59,6 +60,16 @@ class ThreeSlotsExtension(krita.Extension):
                 except:
                     self.brushSizeList[idx] = None
 
+        paintingOpacityList = Application.readSetting(
+            "", "threeslotsOpacity", "").split(',')
+
+        if len(paintingOpacityList) == self.num_slots:
+            for idx, brush_opacity in enumerate(paintingOpacityList):
+                try:
+                    self.paintingOpacityList[idx] = float(brush_opacity)
+                except:
+                    self.paintingOpacityList[idx] = None
+
         #setting = Application.readSetting("", "threeslotsCurIdx", "0")
         #try:
         #    self.current_idx = int(setting)
@@ -78,6 +89,7 @@ class ThreeSlotsExtension(krita.Extension):
 
         Application.writeSetting("", "threeslots", ','.join(map(str, brushNameList)))
         Application.writeSetting("", "threeslotsSize", ','.join(map(str, self.brushSizeList)))
+        Application.writeSetting("", "threeslotsOpacity", ','.join(map(str, self.paintingOpacityList)))
         #Application.writeSetting("", "threeslotsCurIdx", str(self.current_idx))
 
     def loadActions(self, window):
@@ -120,6 +132,7 @@ class ThreeSlotsExtension(krita.Extension):
         if (window and len(window.views()) > 0):
             if old_slot_idx != None:
                 self.brushSizeList[old_slot_idx] = window.views()[0].brushSize()
+                self.paintingOpacityList[old_slot_idx] = window.views()[0].paintingOpacity()
                 self.brushResourceList[old_slot_idx] = window.views()[0].currentBrushPreset()
             self.useSlot(cur_slot_idx, window)
 
@@ -131,13 +144,17 @@ class ThreeSlotsExtension(krita.Extension):
         #View->setCurrentBrushPreset
         storedPreset = self.brushResourceList[num_slot]
         size = self.brushSizeList[num_slot]
+        opacity = self.paintingOpacityList[num_slot]
 
-        if storedPreset != None and size != None:
+        if storedPreset != None and size != None and opacity != None:
             #Activate brush preset
             window.views()[0].activateResource(storedPreset)
             #Restore saved brush size
             size = self.brushSizeList[num_slot]
             window.views()[0].setBrushSize(size)
+            #Restore saved brush opacity
+            opacity = self.paintingOpacityList[num_slot]
+            window.views()[0].setPaintingOpacity(opacity)
         self.current_idx = num_slot
 
         #Ensure erase mode is correct
