@@ -42,5 +42,18 @@
       <statusTip></statusTip>
     </Action>
 
+    <Action name="activate_slot_4">
+      <icon></icon>
+      <text>Activate Brush (Slot 4)</text>
+      <whatsThis></whatsThis>
+      <toolTip></toolTip>
+      <iconText></iconText>
+      <activationFlags>10000</activationFlags>
+      <activationConditions>0</activationConditions>
+      <shortcut>ctrl+alt+4</shortcut>
+      <isCheckable>false</isCheckable>
+      <statusTip></statusTip>
+    </Action>
+
   </Actions>
 </ActionCollection>

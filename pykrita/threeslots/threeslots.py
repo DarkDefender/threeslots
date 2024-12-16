@@ -19,7 +19,7 @@ class ThreeSlotsExtension(krita.Extension):
     def __init__(self, parent):
         super(ThreeSlotsExtension, self).__init__(parent)
 
-        self.num_slots = 3
+        self.num_slots = 4
         self.current_idx = None
 
         self.actions = []
@@ -114,15 +114,18 @@ class ThreeSlotsExtension(krita.Extension):
             self.useSlot(self.current_idx, window)
 
     def activatePreset(self):
-        Application.action("KritaShape/KisToolBrush").trigger()
+        cur_slot_idx = self.sender().preset
+        old_slot_idx = self.current_idx
+
+        if cur_slot_idx == 3:
+            Application.action("KritaFill/KisToolGradient").trigger()
+        else:
+            Application.action("KritaShape/KisToolBrush").trigger()
 
         if self.kritaEraserAction == None:
             #Setup so that we can ensure the erase mode when manually switching brushes
             self.kritaEraserAction = Application.action("erase_action")
             self.kritaEraserAction.changed.connect(self.ensure_erase_mode)
-
-        cur_slot_idx = self.sender().preset
-        old_slot_idx = self.current_idx
 
         if cur_slot_idx == old_slot_idx:
             return
@@ -131,9 +134,11 @@ class ThreeSlotsExtension(krita.Extension):
 
         if (window and len(window.views()) > 0):
             if old_slot_idx != None:
+                # Save the slot settings from the old slot we are switching away from
                 self.brushSizeList[old_slot_idx] = window.views()[0].brushSize()
                 self.paintingOpacityList[old_slot_idx] = window.views()[0].paintingOpacity()
                 self.brushResourceList[old_slot_idx] = window.views()[0].currentBrushPreset()
+            # Load setting from the slot we are switching to
             self.useSlot(cur_slot_idx, window)
 
     def useSlot(self, num_slot, window):
